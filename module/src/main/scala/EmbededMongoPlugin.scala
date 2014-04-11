@@ -2,13 +2,15 @@ package play.embed.mongo
 
 import play.api.{Logger, Plugin, Application}
 import java.util.logging.{Logger => JLogger}
-import de.flapdoodle.embed.mongo.{Command, MongodStarter, MongodProcess, MongodExecutable}
+import de.flapdoodle.embed.mongo._
 import de.flapdoodle.embed.mongo.config._
 import de.flapdoodle.embed.process.runtime.Network
 import java.io.{File, IOException}
 import de.flapdoodle.embed.mongo.distribution.{Feature, Versions, Version}
 import de.flapdoodle.embed.process.distribution.GenericVersion
 import de.flapdoodle.embed.mongo.config.processlistener.ProcessListenerBuilder
+import scala.runtime
+import de.flapdoodle.embed.mongo.runtime.MongoImport
 
 
 /**
@@ -20,6 +22,7 @@ class EmbedMongoPlugin(app: Application) extends Plugin {
   private var process: MongodProcess = _
 
   override def enabled = app.configuration.getBoolean("embed.mongo.enabled").getOrElse(false)
+  def mongoImportEnabled = app.configuration.getBoolean("embed.mongo.import.enabled").getOrElse(false)
 
   override def onStart() {
     val runtimeConfig = new RuntimeConfigBuilder()
@@ -64,6 +67,9 @@ class EmbedMongoPlugin(app: Application) extends Plugin {
         throw new IOException(message, e)
       }
     }
+    /*if(mongoImportEnabled){
+      new MongoImportPlugin(app).onStart()
+    }*/
   }
 
   override def onStop() {
